@@ -3,7 +3,7 @@ from setuptools import setup
 setup(name='smartcrop',
       version='0.4',
       description='OpenCV smart crop',
-      url='https://github.com/epixelic/python-smart-crop',
+      url='https://github.com/bluecadet/python-smart-crop',
       author='Josua Gonzalez',
       author_email='jgonzalez@epixelic.com',
       include_package_data=True,
