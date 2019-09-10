@@ -15,12 +15,14 @@ FEATURE_DETECT_MIN_DISTANCE = 10
 FACE_DETECT_REJECT_LEVELS = 1.3
 FACE_DETECT_LEVEL_WEIGHTS = 5
 
-cascade_path = os.path.dirname(__file__) + '/cascades/haarcascade_frontalface_default.xml'
+cascade_path = os.path.dirname(
+    __file__) + '/cascades/haarcascade_frontalface_default.xml'
 
 
 def center_from_faces(matrix):
     face_cascade = cv2.CascadeClassifier(cascade_path)
-    faces = face_cascade.detectMultiScale(matrix, FACE_DETECT_REJECT_LEVELS, FACE_DETECT_LEVEL_WEIGHTS)
+    faces = face_cascade.detectMultiScale(
+        matrix, FACE_DETECT_REJECT_LEVELS, FACE_DETECT_LEVEL_WEIGHTS)
 
     x, y = (0, 0)
     weight = 0
@@ -101,7 +103,7 @@ def auto_resize(image, target_width, target_height):
         p = 2
 
     image = cv2.resize(image, (int(w), int(h)))
-    print("Image resized by", w - width, "*", h - height, "in", p, "pass(es)")
+    # print("Image resized by", w - width, "*", h - height, "in", p, "pass(es)")
 
     return image
 
@@ -111,19 +113,21 @@ def auto_center(matrix):
     center = {'x': 0, 'y': 0}
 
     if not face_center:
-        print('Using Good Feature Tracking method')
+        # print('Using Good Feature Tracking method')
         center = center_from_good_features(matrix)
     else:
-        print('Combining with Good Feature Tracking method')
+        # print('Combining with Good Feature Tracking method')
         features_center = center_from_good_features(matrix)
         face_w = features_center['count'] * COMBINE_FACE_WEIGHT
         feat_w = features_center['count'] * COMBINE_FEATURE_WEIGHT
         t_w = face_w + feat_w
-        center['x'] = (face_center['x'] * face_w + features_center['x'] * feat_w) / t_w
-        center['y'] = (face_center['y'] * face_w + features_center['y'] * feat_w) / t_w
+        center['x'] = (face_center['x'] * face_w +
+                       features_center['x'] * feat_w) / t_w
+        center['y'] = (face_center['y'] * face_w +
+                       features_center['y'] * feat_w) / t_w
 
-        print('Face center', face_center)
-        print('Feat center', features_center)
+        # print('Face center', face_center)
+        # print('Feat center', features_center)
 
     return center
 
@@ -133,7 +137,7 @@ def smart_crop(image, target_width, target_height, destination, do_resize):
     original = cv2.imread(image)
 
     if original is None:
-        print("Could not read source image")
+        # print("Could not read source image")
         exit(1)
 
     target_height = int(target_height)
@@ -147,25 +151,31 @@ def smart_crop(image, target_width, target_height, destination, do_resize):
     height, width, depth = original.shape
 
     if target_height > height:
-        print('Warning: target higher than image')
+        # print('Warning: target higher than image')
 
     if target_width > width:
-        print('Warning: target wider than image')
+        # print('Warning: target wider than image')
 
-    # center = center_from_faces(matrix)
-    #
-    # if not center:
-    #     print('Using Good Feature Tracking method')
-    #     center = center_from_good_features(matrix)
+        # center = center_from_faces(matrix)
+        #
+        # if not center:
+        #     print('Using Good Feature Tracking method')
+        #     center = center_from_good_features(matrix)
     center = auto_center(matrix)
 
-    print('Found center at', center)
+    # print('Found center at', center)
 
     crop_pos = exact_crop(center, width, height, target_width, target_height)
-    print('Crop rectangle is', crop_pos)
+    # print('Crop rectangle is', crop_pos)
 
-    cropped = original[int(crop_pos['top']): int(crop_pos['bottom']), int(crop_pos['left']): int(crop_pos['right'])]
+    cropped = original[int(crop_pos['top']): int(crop_pos['bottom']), int(
+        crop_pos['left']): int(crop_pos['right'])]
     cv2.imwrite(destination, cropped)
+
+    return {'top': crop_pos['top'] / height,
+            'bottom': crop_pos['bottom'] / height,
+            'left': crop_pos['left'] / width,
+            'right': crop_pos['right'] / width}
 
 
 def main():
@@ -179,7 +189,8 @@ def main():
 
     args = vars(ap.parse_args())
 
-    smart_crop(args["image"], args["width"], args["height"], args["output"], not args["no_resize"])
+    smart_crop(args["image"], args["width"], args["height"],
+               args["output"], not args["no_resize"])
 
 
 if __name__ == '__main__':
