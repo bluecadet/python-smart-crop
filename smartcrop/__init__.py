@@ -70,7 +70,8 @@ def exact_crop(center, original_width, original_height, target_width, target_hei
         # print("Top side over by ", offsetH - original_height)
         top = top - (offset_h - original_height)
     top = max(top, 0)
-    bottom = min(offset_h, original_height)
+    # bottom = min(offset_h, original_height)
+    bottom = min(top + target_height, original_height)
 
     left = max(center['x'] - math.floor(target_width / 2), 0)
     offset_w = left + target_width
@@ -102,7 +103,8 @@ def auto_resize(image, target_width, target_height):
         w, h = w * ratio, h * ratio
         p = 2
 
-    image = cv2.resize(image, (int(w), int(h)))
+    # image = cv2.resize(image, (int(w), int(h)))
+    image = cv2.resize(image, (math.ceil(w), math.ceil(h)))
     # print("Image resized by", w - width, "*", h - height, "in", p, "pass(es)")
 
     return image
@@ -128,6 +130,9 @@ def auto_center(matrix):
 
         # print('Face center', face_center)
         # print('Feat center', features_center)
+
+    center['x'] = int(center['x'])
+    center['y'] = int(center['y'])
 
     return center
 
