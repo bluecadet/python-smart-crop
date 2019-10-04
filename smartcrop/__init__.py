@@ -83,10 +83,10 @@ def exact_crop(center, original_width, original_height, target_width, target_hei
     right = min(left + target_width, original_width)
 
     return {
-        'left': left,
-        'right': right,
-        'top': top,
-        'bottom': bottom
+        'left': int(left),
+        'right': int(right),
+        'top': int(top),
+        'bottom': int(bottom)
     }
 
 
@@ -171,10 +171,11 @@ def smart_crop(image, target_width, target_height, destination, do_resize):
     # print('Found center at', center)
 
     crop_pos = exact_crop(center, width, height, target_width, target_height)
+
     # print('Crop rectangle is', crop_pos)
 
-    cropped = original[int(crop_pos['top']): int(crop_pos['bottom']), int(
-        crop_pos['left']): int(crop_pos['right'])]
+    cropped = original[crop_pos['top']: crop_pos['bottom'],
+                       crop_pos['left']: crop_pos['right']]
     cv2.imwrite(destination, cropped)
 
     return {'top': crop_pos['top'] / height,
